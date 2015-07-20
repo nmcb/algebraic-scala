@@ -1,6 +1,7 @@
 data Expr = Val Int
           | Expr :+: Expr
           | Expr :-: Expr
+          deriving Show
 
 
 expr1 = Val 3 :+: Val 4
@@ -17,6 +18,7 @@ interpret (x :-: y) = interpret x - interpret y
 data Instr = PUSH Int
            | ADD
            | SUB
+           deriving Show
 
 
 compile :: Expr -> [Instr]
@@ -55,11 +57,3 @@ compiler = ExprAlgebra
 
 compile' :: Expr -> [Instr]
 compile' = foldExpr compiler
-
-showPUSH :: Int -> ShowS
-showPUSH v = showString "PUSH " . shows (v)
-
-instance Show (Instr) where
-         show (PUSH v) = showPUSH v ""
-         show (ADD)    = "ADD"
-         show (SUB)    = "SUB"
