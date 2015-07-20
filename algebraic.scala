@@ -32,14 +32,14 @@ object algebraic {
 
   object ExprAlgebra {
     val interpreter = ExprAlgebra[Int](
-      i => i,
-      x => y => x + y,
-      x => y => x - y
+      value = i => i,
+      add   = x => y => x + y,
+      sub   = x => y => x - y
     )
     val compiler    = ExprAlgebra[List[Instr]](
-      i => List(PushInstr(i)),
-      x => y => x ++ y ++ List(AddInstr),
-      x => y => x ++ y ++ List(SubInstr)
+      value = i => List(PushInstr(i)),
+      add   = x => y => x ++ y ++ List(AddInstr),
+      sub   = x => y => x ++ y ++ List(SubInstr)
     )
     def fold[T](alg: ExprAlgebra[T])(e: => Expr): T = {
       val ExprAlgebra(value, add, sub) = alg
