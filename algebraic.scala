@@ -8,7 +8,7 @@ object algebraic {
     val expr1 = Add(Val(3), Val(4))
     val expr2 = Sub(expr1, Val(2))
     val expr3 = Add(Val(3), Sub(Val(2), Val(4)))
-    def interpret(expr: Expr): Int = expr match {
+    def interpret(e: Expr): Int = e match {
       case Val(v)        => v
       case Add(lhs, rhs) => interpret(lhs) + interpret(rhs)
       case Sub(lhs, rhs) => interpret(lhs) - interpret(rhs)
@@ -28,7 +28,7 @@ object algebraic {
     }
   }
 
-  case class ExprAlgebra[E](value: Int => E, add: E => E => E, sub: E => E => E)
+  case class ExprAlgebra[T](value: Int => T, add: T => T => T, sub: T => T => T)
 
   object ExprAlgebra {
     val interpreter = ExprAlgebra[Int](
@@ -41,46 +41,48 @@ object algebraic {
       x => y => x ++ y ++ List(AddInstr),
       x => y => x ++ y ++ List(SubInstr)
     )
-    def foldExpr[E](alg: ExprAlgebra[E])(e: => Expr): E = {
+    def fold[T](alg: ExprAlgebra[T])(e: => Expr): T = {
       val ExprAlgebra(value, add, sub) = alg
       e match {
         case Val(i)    => value(i)
-        case Add(x, y) => add(foldExpr(alg)(x))(foldExpr(alg)(y))
-        case Sub(x, y) => sub(foldExpr(alg)(x))(foldExpr(alg)(y))
+        case Add(x, y) => add(fold(alg)(x))(fold(alg)(y))
+        case Sub(x, y) => sub(fold(alg)(x))(fold(alg)(y))
       }
     }
-    def compile = foldExpr(compiler) _
-    def interpret = foldExpr(interpreter) _
+    def compile = fold(compiler) _
+    def interpret = fold(interpreter) _
   }
 
   def run() {
     
     import Expr._
     import Instr._
-    println("Expressions:")
-    println("exp1:" + expr1)
-    println("exp2:" + expr2)
-    println("exp3:" + expr3)
-    println()
-    println("Direct interpretation:")
-    println("exp1 = " + interpret(expr1))
-    println("exp2 = " + interpret(expr2))
-    println("exp3 = " + interpret(expr3))
-    println()
-    println("Direct compilation into instructions:")
-    println("exp1 = " + compile(expr1))
-    println("exp2 = " + compile(expr2))
-    println("exp3 = " + compile(expr3))
-    println()
-    println("Algebraic interpretation:")
-    println("exp1 = " + ExprAlgebra.interpret(expr1))
-    println("exp2 = " + ExprAlgebra.interpret(expr2))
-    println("exp3 = " + ExprAlgebra.interpret(expr3))
-    println()
-    println("Algebraic compilation into instructions:")
-    println("exp1 = " + ExprAlgebra.compile(expr1))
-    println("exp2 = " + ExprAlgebra.compile(expr2))
-    println("exp3 = " + ExprAlgebra.compile(expr3))
+    s"""
+      | Expressions:
+      | exp1 = $expr1
+      | exp2 = $expr2
+      | exp3 = $expr3
+      | 
+      | Direct interpretation:
+      | exp1 = ${interpret(expr1)}
+      | exp2 = ${interpret(expr2)}
+      | exp3 = ${interpret(expr3)}
+      | 
+      | Direct compilation into instructions:
+      | exp1 = ${compile(expr1)}
+      | exp2 = ${compile(expr2)}
+      | exp3 = ${compile(expr3)}
+      | 
+      | Algebraic interpretation:
+      | exp1 = ${ExprAlgebra.interpret(expr1)}
+      | exp2 = ${ExprAlgebra.interpret(expr2)}
+      | exp3 = ${ExprAlgebra.interpret(expr3)}
+      | 
+      | Algebraic compilation into instructions:
+      | exp1 = ${ExprAlgebra.compile(expr1)}
+      | exp2 = ${ExprAlgebra.compile(expr2)}
+      | exp3 = ${ExprAlgebra.compile(expr3)}
+    """.stripMargin.split("\n").foreach(println)
   }  
 }
 
