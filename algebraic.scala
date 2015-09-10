@@ -32,7 +32,7 @@ object algebraic {
 
   object ExprAlgebra {
     val interpreter = ExprAlgebra[Int](
-      value = i => i,
+      value = identity,
       add   = x => y => x + y,
       sub   = x => y => x - y
     )
