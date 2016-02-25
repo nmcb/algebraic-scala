@@ -21,7 +21,7 @@ object trampoline {
     }
 
     // local trampoline implementation
-    trait Tramp[+A] {
+    sealed trait Tramp[+A] {
         @scala.annotation.tailrec
         final def result: A = this match {
             case Done(a)    => a

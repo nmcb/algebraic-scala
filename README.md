@@ -40,4 +40,13 @@ Algebraic compilation into instructions:
 exp1 = List(PushInstr(3), PushInstr(4), AddInstr)
 exp2 = List(PushInstr(3), PushInstr(4), AddInstr, PushInstr(2), SubInstr)
 exp3 = List(PushInstr(3), PushInstr(2), PushInstr(4), SubInstr, AddInstr)
+```
+
+# Recursion Scheme
+
+TODO
+
+# Typer
+
+TODO
 
